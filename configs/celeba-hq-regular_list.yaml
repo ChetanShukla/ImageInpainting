@@ -6,8 +6,8 @@ datasets:
     n_workers: 16
     fineSize: 256
     img_shape: [3, 256, 256]  # [channel, height, width]
-    image_list: 'datasets/celeba_hq/list_val.txt'
-    mask_list: 'datasets/mask/list_val.txt'
+    image_list: 'datasets/celeba-hq/list_val.txt'
+    mask_list: 'datasets/mask/list_celeba-hq-irregular.txt'
     mask_type: 'regular'
     mask_pos: 'random'
     mask_height: 128
