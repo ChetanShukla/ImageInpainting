@@ -8,7 +8,7 @@ from models.inpainting_model import InpaintingModel
 import torch
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='configs/paris-celeba-hq-regular_list.yaml', help='path to the config file.')
+parser.add_argument('--config', type=str, default='configs/celeba-hq-regular_list.yaml', help='path to the config file.')
 parser.add_argument('--output_path', type=str, default='.', help='output path of the tensorboard file')
 args = parser.parse_args()
 
