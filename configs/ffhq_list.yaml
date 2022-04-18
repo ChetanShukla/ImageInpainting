@@ -67,7 +67,7 @@ save_model_iter: 2000
 display_num: 8
 
 network_G:
-  which_model_G: 'inpainting_resnet'
+  which_model_G: 'DMFN'
   in_nc: 4
   out_nc: 3
   nf: 64
