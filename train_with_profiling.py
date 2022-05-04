@@ -53,9 +53,9 @@ total_epochs = 2
 
 # training
 for epoch in range(start_epoch, total_epochs):
-    total_iters = 3
+    total_iters = 5
     with torch.profiler.profile(
-            schedule=torch.profiler.schedule(wait=1, warmup=1, active=1),
+            schedule=torch.profiler.schedule(wait=1, warmup=1, active=3),
             on_trace_ready=torch.profiler.tensorboard_trace_handler('./log/image_inpainting'),
             activities=[
                 torch.profiler.ProfilerActivity.CPU,
