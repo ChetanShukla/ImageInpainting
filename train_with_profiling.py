@@ -13,7 +13,7 @@ parser.add_argument('--config', type=str, default='configs/celeba-hq-regular_lis
 parser.add_argument('--output_path', type=str, default='.', help='output path of the tensorboard file')
 args = parser.parse_args()
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 config = get_config(args.config)
 torch.backends.cudnn.benchmark = True
 
@@ -74,8 +74,9 @@ for epoch in range(start_epoch, total_epochs):
             # model.update_learning_rate()
 
             # training
-            model.feed_data(train_data)
-            model.optimize_parameters()
+            with torch.cuda.amp.autocast():
+                model.feed_data(train_data)
+                model.optimize_parameters()
             print('Past the training tasks!')
 
             # updating learning rate
