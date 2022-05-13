@@ -11,14 +11,14 @@ class InpaintingGenerator(nn.Module):
             B.conv_block(nf, 2 * nf, 3, stride=2, padding=1, norm=norm, activation=activation),  # [128, 128, 128]
             B.conv_block(2 * nf, 2 * nf, 3, stride=1, padding=1, norm=norm, activation=activation),  # [128, 128, 128]
             B.conv_block(2 * nf, 4 * nf, 3, stride=2, padding=1, norm=norm, activation=activation)  # [256, 64, 64]
-        )
+        ).cuda()
 
         blocks = []
         for _ in range(n_res):
             block = B.ResBlock_new(4 * nf)
             blocks.append(block)
 
-        self.blocks = nn.Sequential(*blocks)
+        self.blocks = nn.Sequential(*blocks).cuda()
 
         self.decoder = nn.Sequential(
             B.conv_block(4 * nf, 4 * nf, 3, stride=1, padding=1, norm=norm, activation=activation),  # [256, 64, 64]
@@ -27,7 +27,7 @@ class InpaintingGenerator(nn.Module):
             B.upconv_block(2 * nf, nf, kernel_size=3, stride=1, padding=1, norm=norm, activation='relu'),
             # [64, 256, 256]
             B.conv_block(nf, out_nc, 3, stride=1, padding=1, norm='none', activation='tanh')  # [3, 256, 256]
-        )
+        ).cuda()
 
     def forward(self, x):
         x = self.encoder(x)
@@ -52,7 +52,7 @@ class Discriminator(nn.Module):
                          # [512, 8, 8]
                          B.conv_block(8 * nf, 8 * nf, 5, stride=2, padding=2, norm=norm,
                                       activation=activation)]  # [512, 4, 4]
-        self.global_model = nn.Sequential(*global_model)
+        self.global_model = nn.Sequential(*global_model).cuda()
 
 
         self.local_fea1 = B.conv_block(in_nc, nf, 5, stride=2, padding=2, norm=norm, activation=activation)  # [64, 64, 64]
@@ -63,7 +63,7 @@ class Discriminator(nn.Module):
 
         self.global_classifier = nn.Linear(512 * 4 * 4, 512)
         self.local_classifier = nn.Linear(512 * 4 * 4, 512)
-        self.classifier = nn.Sequential(nn.LeakyReLU(0.2), nn.Linear(1024, 1))
+        self.classifier = nn.Sequential(nn.LeakyReLU(0.2), nn.Linear(1024, 1)).cuda()
 
     def forward(self, x_local, x_global):
         out_local_fea1 = self.local_fea1(x_local)
@@ -98,15 +98,15 @@ class VGGFeatureExtractor(nn.Module):
         for k, v in model.named_parameters():
             v.requires_grad = False
 
-        self.relu1_1 = nn.Sequential(*list(model.features.children())[:(feature_layer[0] + 1)])  # [0-1]
+        self.relu1_1 = nn.Sequential(*list(model.features.children())[:(feature_layer[0] + 1)]).cuda()  # [0-1]
         self.relu2_1 = nn.Sequential(
-            *list(model.features.children())[(feature_layer[0] + 1):(feature_layer[1] + 1)])  # [2-6]
+            *list(model.features.children())[(feature_layer[0] + 1):(feature_layer[1] + 1)]).cuda()  # [2-6]
         self.relu3_1 = nn.Sequential(
-            *list(model.features.children())[(feature_layer[1] + 1):(feature_layer[2] + 1)])  # [7-11]
+            *list(model.features.children())[(feature_layer[1] + 1):(feature_layer[2] + 1)]).cuda()  # [7-11]
         self.relu4_1 = nn.Sequential(
-            *list(model.features.children())[(feature_layer[2] + 1):(feature_layer[3] + 1)])  # [12-20]
+            *list(model.features.children())[(feature_layer[2] + 1):(feature_layer[3] + 1)]).cuda()  # [12-20]
         self.relu5_1 = nn.Sequential(
-            *list(model.features.children())[(feature_layer[3] + 1):(feature_layer[4] + 1)])  # [21-29]
+            *list(model.features.children())[(feature_layer[3] + 1):(feature_layer[4] + 1)]).cuda()  # [21-29]
 
     def forward(self, x):
         if self.use_input_norm:
